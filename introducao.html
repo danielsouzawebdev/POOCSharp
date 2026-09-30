@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Introdução à POO — POO em C#</title>
+<meta name="description" content="O que é Programação Orientada a Objetos, explicado por analogias do dia a dia, sem pré-requisitos.">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="bar">
+    <a class="brand" href="index.html">
+      <span class="dots"><span></span><span></span><span></span></span>
+      POO em C#
+    </a>
+    <nav class="site-nav">
+      <a href="index.html">Início</a>
+      <a href="introducao.html" aria-current="page">Introdução</a>
+      <a href="aula-tecnica.html">Aula Técnica</a>
+      <a href="tutorial-visual-studio.html">Tutorial VS</a>
+    </nav>
+  </div>
+</header>
+
+<div class="docs">
+  <aside class="docs-side">
+    <p class="side-title">Nesta página</p>
+    <ul>
+      <li><a href="#como-pensavamos">Como pensávamos antes</a></li>
+      <li><a href="#ideia-central">A ideia central</a></li>
+      <li><a href="#duas-partes">As duas partes de um objeto</a></li>
+      <li><a href="#classe-objeto">Classe e objeto</a></li>
+      <li><a href="#encapsulamento">Encapsulamento</a></li>
+      <li><a href="#heranca">Herança</a></li>
+      <li><a href="#polimorfismo">Polimorfismo</a></li>
+      <li><a href="#abstracao">Abstração</a></li>
+      <li><a href="#por-que-importa">Por que isso importa</a></li>
+    </ul>
+  </aside>
+
+  <main class="docs-main">
+    <p class="page-kicker">introdução · sem pré-requisitos</p>
+    <h1>O que é Programação Orientada a Objetos?</h1>
+    <p class="lede">Uma introdução por analogias. Quase nenhum código aqui — o objetivo é a intuição, não a sintaxe. A versão técnica em C# vem na próxima página.</p>
+
+    <section id="como-pensavamos">
+      <h2>Como um programa pensa sem POO</h2>
+      <p>Antes de mais nada, vale ver o estilo que a POO substitui: uma lista de instruções, uma depois da outra — como uma receita de bolo.</p>
+      <p><strong>Passo 1:</strong> pegue os ovos. <strong>Passo 2:</strong> bata com o açúcar. <strong>Passo 3:</strong> adicione a farinha. <strong>Passo 4:</strong> leve ao forno.</p>
+      <p>Funciona bem para tarefas pequenas. Mas quando o programa cresce — muitos dados, muitas telas, muitas regras — vira uma receita gigante, difícil de entender e fácil de quebrar.</p>
+    </section>
+
+    <section id="ideia-central">
+      <h2>A ideia central</h2>
+      <p>Em vez de uma lista de passos, o programa vira um conjunto de "coisas".</p>
+      <div class="callout good">
+        <span class="label">A frase que resume a aula inteira</span>
+        <p>Cada "coisa" no programa sabe o que ela é e sabe o que ela faz.</p>
+      </div>
+      <p>Um cachorro late, corre, abana o rabo. Um carro acelera, freia, buzina. Uma conta bancária deposita, saca, consulta. Cada um desses é um <strong>objeto</strong>: junta dado e comportamento na mesma unidade.</p>
+    </section>
+
+    <section id="duas-partes">
+      <h2>Todo objeto tem duas partes</h2>
+      <p>O que ele <strong>é</strong>, e o que ele <strong>faz</strong>.</p>
+      <table>
+        <thead><tr><th>Objeto</th><th>O que ele é</th><th>O que ele faz</th></tr></thead>
+        <tbody>
+          <tr><td>Cachorro</td><td>nome, raça, idade</td><td>latir, correr, comer</td></tr>
+          <tr><td>Celular</td><td>marca, cor, bateria</td><td>ligar, tirar foto, tocar música</td></tr>
+        </tbody>
+      </table>
+      <p class="note">No código, chamamos "o que ele é" de <strong>atributos</strong>, e "o que ele faz" de <strong>métodos</strong>.</p>
+    </section>
+
+    <section id="classe-objeto" class="pillar">
+      <div class="pillar-text">
+        <h2>Classe e objeto</h2>
+        <p>A <strong>classe</strong> é a receita. O <strong>objeto</strong> é o bolo pronto.</p>
+        <p>A classe descreve, de forma genérica, o que todo cachorro tem e faz — existe só uma vez, é o "molde". Cada objeto é construído a partir da mesma receita, mas com seus próprios valores: Rex e Luna são dois objetos diferentes da mesma classe <code>Cachorro</code>.</p>
+      </div>
+      <div class="pillar-visual">
+        <span class="tag">receita → Cachorro</span>
+        <strong>Rex e Luna</strong>
+        <span class="sample">Rex → nome: "Rex", raça: "Vira-lata"<br>Luna → nome: "Luna", raça: "Poodle"</span>
+      </div>
+    </section>
+
+    <section id="encapsulamento" class="pillar flip">
+      <div class="pillar-text">
+        <h2>Pilar 1 — Encapsulamento</h2>
+        <p>Esconder o complicado, mostrar só o necessário.</p>
+        <p>Pense no controle remoto: você aperta "play" e não precisa saber como o sinal infravermelho funciona por dentro. No código, o objeto expõe ações simples — <code>Sacar</code>, <code>Depositar</code> — e esconde os detalhes internos de como o saldo é calculado e validado. Isso evita que alguém, sem querer, deixe o objeto num estado que não faz sentido, como um saldo negativo.</p>
+      </div>
+      <div class="pillar-visual">
+        <span class="tag">controle remoto</span>
+        <strong>Botão simples por fora</strong>
+        <span class="sample">▶ play — sem saber o que tem dentro</span>
+      </div>
+    </section>
+
+    <section id="heranca" class="pillar">
+      <div class="pillar-text">
+        <h2>Pilar 2 — Herança</h2>
+        <p>Um cachorro e um gato têm coisas em comum: ambos são animais.</p>
+        <p>Em vez de escrever "comer" e "dormir" duas vezes, escrevemos uma vez em <code>Animal</code> e cada filho aproveita — e ainda soma o que é só dele: o cachorro ganha <code>latir()</code>, o gato ganha <code>miar()</code>.</p>
+      </div>
+      <div class="pillar-visual">
+        <span class="tag">Animal → Cachorro, Gato</span>
+        <strong>Reaproveitar o que é comum</strong>
+        <span class="sample">herda: nome, idade, comer(), dormir()<br>+ ganha: latir() ou miar()</span>
+      </div>
+    </section>
+
+    <section id="polimorfismo" class="pillar flip">
+      <div class="pillar-text">
+        <h2>Pilar 3 — Polimorfismo</h2>
+        <p>A mesma ordem, uma resposta diferente para cada um.</p>
+        <p>Peça "faça um som" para uma lista de animais: o cachorro late, o gato mia, o pato faz quá-quá. Cada objeto sabe responder do seu próprio jeito à mesma pergunta — o código que pede o som não precisa saber qual animal é, só pede, e cada um responde à sua maneira.</p>
+      </div>
+      <div class="pillar-visual">
+        <span class="tag">"faça um som"</span>
+        <strong>Cachorro → Au au! · Gato → Miau!</strong>
+        <span class="sample">mesma chamada, resposta de cada tipo</span>
+      </div>
+    </section>
+
+    <section id="abstracao" class="pillar">
+      <div class="pillar-text">
+        <h2>Pilar 4 — Abstração</h2>
+        <p>Usar sem precisar entender por dentro.</p>
+        <p>Você dirige um carro usando volante, pedais e câmbio, sem saber como a injeção eletrônica funciona — e o "contrato" é sempre o mesmo, mesmo trocando de carro. No código, definimos um contrato — quais ações um objeto promete ter — e quem usa o objeto só precisa conhecer esse contrato, não como ele foi construído por dentro.</p>
+      </div>
+      <div class="pillar-visual">
+        <span class="tag">dirigir um carro</span>
+        <strong>O contrato é sempre o mesmo</strong>
+        <span class="sample">volante, pedais, câmbio — troque de carro à vontade</span>
+      </div>
+    </section>
+
+    <section id="por-que-importa">
+      <h2>Por que aprender isso importa</h2>
+      <table>
+        <thead><tr><th>Razão</th><th>O que resolve</th></tr></thead>
+        <tbody>
+          <tr><td>Organização</td><td>Cada regra tem um lugar certo para morar</td></tr>
+          <tr><td>Reaproveitamento</td><td>Escreve uma vez, usa em vários lugares</td></tr>
+          <tr><td>Manutenção</td><td>Corrigir um problema não quebra o resto</td></tr>
+          <tr><td>Trabalho em equipe</td><td>Cada pessoa cuida de uma parte, sem pisar na dos outros</td></tr>
+        </tbody>
+      </table>
+      <div class="callout">
+        <span class="label">Se você lembrar de uma coisa</span>
+        <p>Um programa pode ser pensado como um conjunto de "coisas" que sabem o que são e o que fazem. Classe, herança e interface são só ferramentas para dar um endereço claro a cada regra do sistema.</p>
+      </div>
+    </section>
+
+    <div class="pagefoot">
+      <span></span>
+      <a href="aula-tecnica.html">Próximo: Aula técnica em C# →</a>
+    </div>
+  </main>
+</div>
+
+<footer class="site-footer">
+  Material da disciplina de Programação Orientada a Objetos — publicado com GitHub Pages.
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aula Técnica — POO em C#</title>
+<meta name="description" content="Classes, encapsulamento, herança, polimorfismo e abstração em C#, com exercícios e projeto final.">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="bar">
+    <a class="brand" href="index.html">
+      <span class="dots"><span></span><span></span><span></span></span>
+      POO em C#
+    </a>
+    <nav class="site-nav">
+      <a href="index.html">Início</a>
+      <a href="introducao.html">Introdução</a>
+      <a href="aula-tecnica.html" aria-current="page">Aula Técnica</a>
+      <a href="tutorial-visual-studio.html">Tutorial VS</a>
+    </nav>
+  </div>
+</header>
+
+<div class="docs">
+  <aside class="docs-side">
+    <p class="side-title">Módulos</p>
+    <ul>
+      <li><a href="#m0">0 · O problema que a POO resolve</a></li>
+      <li><a href="#m1">1 · Classe e objeto</a></li>
+      <li><a href="#m2">2 · Encapsulamento</a></li>
+      <li><a href="#m3">3 · Herança</a></li>
+      <li><a href="#m4">4 · Abstração</a></li>
+      <li><a href="#m5">5 · Polimorfismo</a></li>
+      <li><a href="#m6">6 · Detalhes do C#</a></li>
+      <li><a href="#m7">7 · Introdução ao SOLID</a></li>
+      <li><a href="#projeto">Projeto final</a></li>
+      <li><a href="#erros">Erros comuns</a></li>
+    </ul>
+  </aside>
+
+  <main class="docs-main">
+    <p class="page-kicker">aula técnica · pré-requisito: sintaxe básica de C#</p>
+    <h1>Programação Orientada a Objetos com C#</h1>
+    <p class="lede">Duração sugerida: 4 horas. Ambiente: .NET 8 ou superior. Esta página assume que você já passou pela <a href="introducao.html">introdução conceitual</a> — aqui entramos na sintaxe real.</p>
+
+    <section id="m0">
+      <h2>Módulo 0 — O problema que a POO resolve</h2>
+      <p>Antes de qualquer sintaxe, vale o código ruim:</p>
+      <pre><code>// Código procedural: dados soltos, regras espalhadas
+string nomeCliente = "Ana";
+decimal saldo = 1500m;
+bool contaAtiva = true;
+
+// Regra de saque duplicada em vários lugares do sistema
+if (contaAtiva &amp;&amp; saldo >= 200m)
+{
+    saldo -= 200m;
+}</code></pre>
+      <p>Problemas: nada impede alguém de fazer <code>saldo = -9999m</code> em outro arquivo. A regra "só saca se ativa e com saldo" precisa ser reescrita toda vez. Ao adicionar "limite de saque diário", é preciso caçar todas as ocorrências.</p>
+      <p>A POO junta <strong>dados + comportamento</strong> em uma unidade que protege as próprias regras:</p>
+      <pre><code>var conta = new ContaCorrente("Ana", 1500m);
+conta.Sacar(200m);   // a regra mora dentro do objeto</code></pre>
+      <div class="callout">
+        <span class="label">Frase-chave</span>
+        <p>Objeto não é um "pacote de variáveis"; é um pedaço do sistema que sabe se comportar.</p>
+      </div>
+    </section>
+
+    <section id="m1">
+      <h2>Módulo 1 — Classe e objeto</h2>
+      <p><strong>Classe</strong> é a definição (a planta da casa). <strong>Objeto</strong> é a instância (a casa construída).</p>
+      <pre><code>public class ContaCorrente
+{
+    // Campo (field) — estado interno, sempre privado
+    private decimal _saldo;
+
+    // Propriedade — acesso controlado ao estado
+    public string Titular { get; }
+    public decimal Saldo => _saldo;   // somente leitura
+
+    // Construtor — garante que o objeto nasça válido
+    public ContaCorrente(string titular, decimal saldoInicial)
+    {
+        if (string.IsNullOrWhiteSpace(titular))
+            throw new ArgumentException("Titular é obrigatório.", nameof(titular));
+
+        if (saldoInicial &lt; 0)
+            throw new ArgumentOutOfRangeException(nameof(saldoInicial));
+
+        Titular = titular;
+        _saldo = saldoInicial;
+    }
+
+    public void Depositar(decimal valor)
+    {
+        if (valor &lt;= 0)
+            throw new ArgumentOutOfRangeException(nameof(valor), "Depósito deve ser positivo.");
+
+        _saldo += valor;
+    }
+
+    public bool Sacar(decimal valor)
+    {
+        if (valor &lt;= 0 || valor > _saldo)
+            return false;
+
+        _saldo -= valor;
+        return true;
+    }
+}</code></pre>
+      <p>Uso:</p>
+      <pre><code>var conta = new ContaCorrente("Ana", 1500m);
+conta.Depositar(300m);
+
+if (!conta.Sacar(5000m))
+    Console.WriteLine("Saque recusado.");
+
+Console.WriteLine($"{conta.Titular}: {conta.Saldo:C}");</code></pre>
+      <h3>Ponto de atenção: construtor é um contrato</h3>
+      <p>O construtor existe para impedir que o objeto exista em estado inválido. Se é possível criar uma <code>ContaCorrente</code> sem titular, a classe está mal escrita.</p>
+      <div class="callout">
+        <span class="label">Exercício 1.1</span>
+        <p>Crie uma classe <code>Produto</code> com <code>Nome</code>, <code>Preco</code> e <code>Estoque</code>. O construtor deve rejeitar preço negativo. Adicione <code>Vender(int quantidade)</code> que retorna <code>false</code> se não houver estoque suficiente.</p>
+      </div>
+    </section>
+
+    <section id="m2">
+      <h2>Módulo 2 — Encapsulamento</h2>
+      <p>Encapsular é esconder o <strong>como</strong> e expor o <strong>o quê</strong>.</p>
+      <h3>Modificadores de acesso</h3>
+      <table>
+        <thead><tr><th>Modificador</th><th>Visível em</th></tr></thead>
+        <tbody>
+          <tr><td><code>private</code></td><td>só dentro da própria classe (padrão para membros)</td></tr>
+          <tr><td><code>protected</code></td><td>na classe e nas classes derivadas</td></tr>
+          <tr><td><code>internal</code></td><td>em todo o assembly (projeto)</td></tr>
+          <tr><td><code>public</code></td><td>em qualquer lugar</td></tr>
+          <tr><td><code>protected internal</code></td><td>assembly <strong>ou</strong> derivadas</td></tr>
+          <tr><td><code>private protected</code></td><td>derivadas <strong>dentro</strong> do assembly</td></tr>
+        </tbody>
+      </table>
+      <p class="note">Regra prática: comece tudo <code>private</code> e só abra o que for realmente necessário.</p>
+
+      <h3>Propriedades: as variações que importam</h3>
+      <pre><code>public class Pedido
+{
+    // Auto-property com setter privado: muda só por dentro
+    public decimal Total { get; private set; }
+
+    // Somente leitura: definida só no construtor
+    public DateTime CriadoEm { get; }
+
+    // init: definida na criação do objeto, imutável depois
+    public string Codigo { get; init; }
+
+    // Propriedade com lógica (full property)
+    private int _quantidade;
+    public int Quantidade
+    {
+        get => _quantidade;
+        set
+        {
+            if (value &lt; 0)
+                throw new ArgumentOutOfRangeException(nameof(value));
+            _quantidade = value;
+        }
+    }
+
+    // Propriedade calculada: não guarda estado
+    public bool EstaVazio => Quantidade == 0;
+}</code></pre>
+
+      <h3>Anti-padrão frequente</h3>
+      <pre><code>// ERRADO: isso é uma struct de dados disfarçada de classe
+public class Conta
+{
+    public decimal Saldo { get; set; }   // qualquer um zera o saldo
+}</code></pre>
+      <p>Se toda propriedade tem <code>get; set;</code> público e a classe não tem métodos com regra, não há encapsulamento — é só um registro. E se for mesmo só um registro, use <code>record</code>:</p>
+      <pre><code>public record Endereco(string Rua, string Cidade, string Cep);</code></pre>
+      <div class="callout">
+        <span class="label">Exercício 2.1</span>
+        <p>Pegue a classe <code>Produto</code> do exercício anterior e garanta que <code>Estoque</code> só possa ser alterado pelos métodos <code>Vender</code> e <code>Repor</code>.</p>
+      </div>
+    </section>
+
+    <section id="m3">
+      <h2>Módulo 3 — Herança</h2>
+      <p>Herança expressa uma relação <strong>"é um"</strong>.</p>
+      <pre><code>public class Funcionario
+{
+    public string Nome { get; }
+    public decimal SalarioBase { get; }
+
+    public Funcionario(string nome, decimal salarioBase)
+    {
+        Nome = nome;
+        SalarioBase = salarioBase;
+    }
+
+    public virtual decimal CalcularSalario() => SalarioBase;
+
+    public override string ToString() => $"{Nome} — {CalcularSalario():C}";
+}
+
+public class Gerente : Funcionario
+{
+    public decimal Bonus { get; }
+
+    public Gerente(string nome, decimal salarioBase, decimal bonus)
+        : base(nome, salarioBase)   // chama o construtor da base
+    {
+        Bonus = bonus;
+    }
+
+    public override decimal CalcularSalario() => SalarioBase + Bonus;
+}
+
+public class Vendedor : Funcionario
+{
+    private readonly decimal _comissao;
+
+    public Vendedor(string nome, decimal salarioBase, decimal comissao)
+        : base(nome, salarioBase) => _comissao = comissao;
+
+    public override decimal CalcularSalario() => SalarioBase + _comissao;
+}</code></pre>
+
+      <h3>virtual, override, sealed, new</h3>
+      <ul>
+        <li><code>virtual</code> — a base <strong>permite</strong> que o método seja substituído.</li>
+        <li><code>override</code> — a derivada <strong>substitui</strong> o comportamento.</li>
+        <li><code>sealed override</code> — substitui e <strong>fecha</strong> a cadeia para baixo.</li>
+        <li><code>new</code> — <strong>esconde</strong> o membro da base. Quase sempre é um erro.</li>
+      </ul>
+      <pre><code>public class A { public virtual void Falar() => Console.WriteLine("A"); }
+public class B : A { public override void Falar() => Console.WriteLine("B"); }
+public class C : A { public new void Falar() => Console.WriteLine("C"); }
+
+A obj1 = new B();  obj1.Falar();   // "B"  → polimorfismo funciona
+A obj2 = new C();  obj2.Falar();   // "A"  → new quebrou o polimorfismo</code></pre>
+
+      <h3>Quando NÃO usar herança</h3>
+      <p>A herança acopla forte: mudar a base quebra todos os filhos. Use <strong>composição</strong> quando a relação é "tem um" ou "usa um".</p>
+      <pre><code>// Ruim: relatório não "é uma" conexão de banco
+public class RelatorioVendas : ConexaoBanco { }
+
+// Bom: o relatório usa um repositório
+public class RelatorioVendas
+{
+    private readonly IRepositorioVendas _repositorio;
+
+    public RelatorioVendas(IRepositorioVendas repositorio)
+        => _repositorio = repositorio;
+}</code></pre>
+      <div class="callout">
+        <span class="label">Diretriz</span>
+        <p>Prefira composição à herança. Só herde quando a derivada puder substituir a base em qualquer lugar sem surpresas.</p>
+      </div>
+      <div class="callout">
+        <span class="label">Exercício 3.1</span>
+        <p>Modele <code>Veiculo</code> (base) com <code>Carro</code>, <code>Moto</code> e <code>Caminhao</code>. Cada um calcula o IPVA com alíquota diferente sobre o valor de mercado.</p>
+      </div>
+    </section>
+
+    <section id="m4">
+      <h2>Módulo 4 — Abstração: classes abstratas e interfaces</h2>
+      <h3>Classe abstrata</h3>
+      <p>Não pode ser instanciada e pode conter implementação parcial.</p>
+      <pre><code>public abstract class Forma
+{
+    public string Nome { get; }
+
+    protected Forma(string nome) => Nome = nome;
+
+    // Sem corpo: obriga cada filha a implementar
+    public abstract double CalcularArea();
+
+    // Com corpo: comportamento comum reaproveitado
+    public string Descrever() => $"{Nome} tem área {CalcularArea():F2}";
+}
+
+public class Circulo : Forma
+{
+    private readonly double _raio;
+
+    public Circulo(double raio) : base("Círculo") => _raio = raio;
+
+    public override double CalcularArea() => Math.PI * _raio * _raio;
+}
+
+public class Retangulo : Forma
+{
+    private readonly double _largura, _altura;
+
+    public Retangulo(double largura, double altura) : base("Retângulo")
+        => (_largura, _altura) = (largura, altura);
+
+    public override double CalcularArea() => _largura * _altura;
+}</code></pre>
+
+      <h3>Interface</h3>
+      <p>Define um contrato puro, sem estado. Uma classe implementa quantas interfaces quiser.</p>
+      <pre><code>public interface INotificador
+{
+    void Enviar(string destinatario, string mensagem);
+}
+
+public class NotificadorEmail : INotificador
+{
+    public void Enviar(string destinatario, string mensagem)
+        => Console.WriteLine($"E-mail para {destinatario}: {mensagem}");
+}
+
+public class NotificadorSms : INotificador
+{
+    public void Enviar(string destinatario, string mensagem)
+        => Console.WriteLine($"SMS para {destinatario}: {mensagem}");
+}
+
+// O serviço depende da abstração, não da implementação
+public class ServicoPedido
+{
+    private readonly INotificador _notificador;
+
+    public ServicoPedido(INotificador notificador) => _notificador = notificador;
+
+    public void Confirmar(string cliente)
+        => _notificador.Enviar(cliente, "Seu pedido foi confirmado!");
+}</code></pre>
+      <p>Trocar e-mail por SMS não exige tocar em <code>ServicoPedido</code> — esse é o ganho concreto.</p>
+
+      <h3>Abstrata ou interface?</h3>
+      <table>
+        <thead><tr><th>Use classe abstrata quando…</th><th>Use interface quando…</th></tr></thead>
+        <tbody>
+          <tr><td>há código comum a compartilhar</td><td>só o contrato importa</td></tr>
+          <tr><td>existe estado (campos) na base</td><td>não há estado</td></tr>
+          <tr><td>a relação é claramente "é um"</td><td>a relação é "é capaz de"</td></tr>
+          <tr><td>herança única basta</td><td>um tipo precisa de vários contratos</td></tr>
+        </tbody>
+      </table>
+      <div class="callout">
+        <span class="label">Exercício 4.1</span>
+        <p>Crie <code>IMeioPagamento</code> com <code>bool Processar(decimal valor)</code>. Implemente <code>CartaoCredito</code>, <code>Pix</code> e <code>Boleto</code>. Faça um <code>Checkout</code> que receba a interface pelo construtor.</p>
+      </div>
+    </section>
+
+    <section id="m5">
+      <h2>Módulo 5 — Polimorfismo na prática</h2>
+      <p>A mesma chamada, comportamentos diferentes, decididos em tempo de execução.</p>
+      <pre><code>var equipe = new List&lt;Funcionario&gt;
+{
+    new Funcionario("Carla", 3000m),
+    new Gerente("Rui", 6000m, 2000m),
+    new Vendedor("Léo", 2500m, 1800m)
+};
+
+decimal folha = 0;
+
+foreach (var f in equipe)
+{
+    Console.WriteLine(f);          // ToString() polimórfico
+    folha += f.CalcularSalario();  // cada um calcula do seu jeito
+}
+
+Console.WriteLine($"Folha total: {folha:C}");</code></pre>
+      <p>Repare no que <strong>não</strong> existe aqui: nenhum <code>if (f is Gerente)</code>. Uma cascata de <code>if</code>/<code>switch</code> por tipo geralmente sinaliza polimorfismo faltando.</p>
+
+      <h3>Sobrecarga (overload) x sobrescrita (override)</h3>
+      <pre><code>public class Calculadora
+{
+    // Sobrecarga: mesmo nome, assinaturas diferentes — resolvida em compilação
+    public int Somar(int a, int b) => a + b;
+    public double Somar(double a, double b) => a + b;
+    public int Somar(params int[] valores) => valores.Sum();
+}</code></pre>
+      <p><strong>Overload:</strong> decidido pelo compilador, pela assinatura. <strong>Override:</strong> decidido em execução, pelo tipo real do objeto.</p>
+
+      <h3>Verificação de tipo quando é inevitável</h3>
+      <pre><code>foreach (var f in equipe)
+{
+    // pattern matching moderno
+    if (f is Gerente { Bonus: > 1000m } g)
+        Console.WriteLine($"{g.Nome} tem bônus alto.");
+}
+
+string Classificar(Forma forma) => forma switch
+{
+    Circulo   => "redonda",
+    Retangulo => "angular",
+    _         => "desconhecida"
+};</code></pre>
+    </section>
+
+    <section id="m6">
+      <h2>Módulo 6 — Detalhes de C# que fazem diferença</h2>
+      <h3>static</h3>
+      <p>Pertence ao tipo, não à instância. Bom para utilitários e constantes; ruim quando guarda estado global mutável.</p>
+      <pre><code>public static class ConversorMoeda
+{
+    public static decimal ParaDolar(decimal reais, decimal cotacao) => reais / cotacao;
+}</code></pre>
+
+      <h3>readonly</h3>
+      <p>Campo que só pode ser atribuído na declaração ou no construtor. Use sempre que a dependência não muda.</p>
+
+      <h3>class x struct x record</h3>
+      <table>
+        <thead><tr><th></th><th>class</th><th>struct</th><th>record</th></tr></thead>
+        <tbody>
+          <tr><td>Tipo</td><td>referência</td><td>valor</td><td>referência (ou <code>record struct</code>)</td></tr>
+          <tr><td>Igualdade</td><td>por referência</td><td>por valor</td><td>por valor</td></tr>
+          <tr><td>Herança</td><td>sim</td><td>não</td><td>sim</td></tr>
+          <tr><td>Uso típico</td><td>entidades com identidade e comportamento</td><td>valores pequenos (<code>Point</code>, <code>Money</code>)</td><td>DTOs, objetos de valor imutáveis</td></tr>
+        </tbody>
+      </table>
+      <pre><code>public record Cliente(string Nome, string Cpf);
+
+var a = new Cliente("Ana", "123");
+var b = new Cliente("Ana", "123");
+Console.WriteLine(a == b);            // True — compara valores
+
+var c = a with { Nome = "Ana Paula" }; // cópia com alteração</code></pre>
+
+      <h3>ToString, Equals, GetHashCode</h3>
+      <p>Toda classe herda de <code>object</code>. Sobrescrever <code>ToString()</code> facilita depuração; sobrescrever <code>Equals</code>/<code>GetHashCode</code> é necessário para comparar por valor em <code>class</code> (em <code>record</code> vem pronto).</p>
+    </section>
+
+    <section id="m7">
+      <h2>Módulo 7 — Introdução ao SOLID</h2>
+      <p>Apresentado aqui como direção, não como dogma.</p>
+      <ul>
+        <li><strong>S — Responsabilidade única:</strong> uma classe, um motivo para mudar. <code>Pedido</code> calcula o total; quem envia e-mail é outro.</li>
+        <li><strong>O — Aberto/fechado:</strong> adicionar um novo meio de pagamento deve significar nova classe, não editar um <code>switch</code> gigante.</li>
+        <li><strong>L — Substituição de Liskov:</strong> se <code>Quadrado : Retangulo</code> quebra ao mudar largura e altura independentemente, a herança está errada.</li>
+        <li><strong>I — Segregação de interfaces:</strong> melhor <code>ILeitor</code> e <code>IEscritor</code> do que um <code>IRepositorioCompleto</code> com 20 métodos que ninguém implementa inteiro.</li>
+        <li><strong>D — Inversão de dependência:</strong> dependa de <code>INotificador</code>, não de <code>NotificadorEmail</code>.</li>
+      </ul>
+    </section>
+
+    <section id="projeto">
+      <h2>Projeto final — Sistema de Biblioteca</h2>
+      <p><strong>Requisitos:</strong></p>
+      <ol>
+        <li><code>Item</code> abstrato com <code>Titulo</code>, <code>Codigo</code> e <code>CalcularMulta(int diasAtraso)</code> abstrato.</li>
+        <li><code>Livro</code>, <code>Revista</code> e <code>Dvd</code> herdam de <code>Item</code> com regras de multa distintas.</li>
+        <li>Interface <code>IEmprestavel</code> com <code>Emprestar(string usuario)</code> e <code>Devolver()</code>.</li>
+        <li><code>Usuario</code> com lista de itens emprestados (limite de 3).</li>
+        <li><code>Biblioteca</code> que registra itens, processa empréstimos e gera um relatório polimórfico.</li>
+        <li>Nenhum <code>if</code> que verifique o tipo do item para calcular multa.</li>
+      </ol>
+      <table>
+        <thead><tr><th>Critério</th><th>Peso</th></tr></thead>
+        <tbody>
+          <tr><td>Encapsulamento (nenhum estado público mutável indevido)</td><td>25%</td></tr>
+          <tr><td>Uso correto de abstração e polimorfismo</td><td>30%</td></tr>
+          <tr><td>Construtores que garantem objetos válidos</td><td>20%</td></tr>
+          <tr><td>Composição no lugar de herança forçada</td><td>15%</td></tr>
+          <tr><td>Legibilidade e nomes</td><td>10%</td></tr>
+        </tbody>
+      </table>
+      <pre><code>public class Usuario
+{
+    private readonly List&lt;Item&gt; _emprestimos = new();
+    public IReadOnlyList&lt;Item&gt; Emprestimos => _emprestimos;   // leitura protegida
+
+    public void Emprestar(Item item)
+    {
+        if (_emprestimos.Count >= 3)
+            throw new InvalidOperationException("Limite de empréstimos atingido.");
+
+        _emprestimos.Add(item);
+    }
+}</code></pre>
+    </section>
+
+    <section id="erros">
+      <h2>Erros comuns para revisar em sala</h2>
+      <ol>
+        <li>Classe só com <code>get; set;</code> público e zero comportamento.</li>
+        <li>Herdar para reaproveitar código, sem relação "é um".</li>
+        <li>Hierarquias com 4+ níveis de profundidade.</li>
+        <li><code>switch</code> por tipo espalhado pelo sistema.</li>
+        <li>Construtor vazio que deixa o objeto inválido.</li>
+        <li>Interface com um único implementador criada "por precaução".</li>
+        <li>Expor <code>List&lt;T&gt;</code> pública — devolva <code>IReadOnlyList&lt;T&gt;</code> e ofereça métodos de modificação.</li>
+      </ol>
+    </section>
+
+    <div class="pagefoot">
+      <a href="introducao.html">← Introdução conceitual</a>
+      <a href="tutorial-visual-studio.html">Próximo: Tutorial no Visual Studio →</a>
+    </div>
+  </main>
+</div>
+
+<footer class="site-footer">
+  Material da disciplina de Programação Orientada a Objetos — publicado com GitHub Pages.
+</footer>
+
+</body>
+</html>
