@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tutorial no Visual Studio — POO em C#</title>
+<meta name="description" content="Passo a passo prático: construa um sistema de cadastro de animais em C#, primeiro no Console e depois com Windows Forms.">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="bar">
+    <a class="brand" href="index.html">
+      <span class="dots"><span></span><span></span><span></span></span>
+      POO em C#
+    </a>
+    <nav class="site-nav">
+      <a href="index.html">Início</a>
+      <a href="introducao.html">Introdução</a>
+      <a href="aula-tecnica.html">Aula Técnica</a>
+      <a href="tutorial-visual-studio.html" aria-current="page">Tutorial VS</a>
+    </nav>
+  </div>
+</header>
+
+<div class="docs">
+  <aside class="docs-side">
+    <p class="side-title">Neste tutorial</p>
+    <ul>
+      <li><a href="#p1-1">1.1 Criar o projeto</a></li>
+      <li><a href="#p1-3">1.3 Classe Animal</a></li>
+      <li><a href="#p1-4">1.4 Cachorro e Gato</a></li>
+      <li><a href="#p1-5">1.5 Usar no Program.cs</a></li>
+      <li><a href="#p1-6">1.6 Encapsulamento</a></li>
+      <li><a href="#p1-7">1.7 Desafio</a></li>
+      <li><a href="#p2-2">2.2 Projeto Windows Forms</a></li>
+      <li><a href="#p2-4">2.4 Montando a tela</a></li>
+      <li><a href="#p2-6">2.6 Reaproveitando classes</a></li>
+      <li><a href="#p2-8">2.8 Botão Cadastrar</a></li>
+      <li><a href="#p2-9">2.9 Botão Fazer Som</a></li>
+      <li><a href="#p2-10">2.10 Rodando tudo</a></li>
+      <li><a href="#erros">Erros comuns</a></li>
+    </ul>
+  </aside>
+
+  <main class="docs-main">
+    <p class="page-kicker">tutorial prático · Visual Studio 2022</p>
+    <h1>Tutorial Prático: POO em C# no Visual Studio</h1>
+    <p class="lede">O que você vai construir: um sistema de cadastro de animais (Pet Shop) que usa os quatro pilares da POO — primeiro rodando no Console, depois com uma tela de verdade em Windows Forms.</p>
+
+    <div class="callout">
+      <span class="label">Pré-requisito</span>
+      <p>Visual Studio 2022 Community instalado, com a carga de trabalho <strong>".NET desktop development"</strong> marcada no instalador (confira em Visual Studio Installer → Modificar).</p>
+    </div>
+
+    <section>
+      <h2>Parte 1 — Console App</h2>
+
+      <h3 id="p1-1">Passo 1.1 — Criar o projeto</h3>
+      <ol>
+        <li>Abra o Visual Studio e clique em <strong>Criar um novo projeto</strong>.</li>
+        <li>Busque <code>Aplicativo de Console</code> e selecione o modelo com a etiqueta <strong>C#</strong>.</li>
+        <li>Clique em <strong>Avançar</strong>.</li>
+        <li>Nome do projeto: <code>PetShopConsole</code>.</li>
+        <li>Estrutura: <strong>.NET 8.0 (Suporte de Longo Prazo)</strong>.</li>
+        <li>Clique em <strong>Criar</strong>.</li>
+      </ol>
+      <p>O Visual Studio abre com <code>Program.cs</code> contendo:</p>
+      <pre><code>Console.WriteLine("Hello, World!");</code></pre>
+      <div class="callout">
+        <span class="label">Por que não tem uma classe Program com Main?</span>
+        <p>Desde o .NET 6, o C# permite escrever o ponto de entrada direto, sem a "casca" de <code>class Program { static void Main() { ... } }</code>. É chamado de <strong>top-level statements</strong>. O compilador gera essa estrutura por baixo dos panos.</p>
+      </div>
+
+      <h3>Passo 1.2 — Rodar pela primeira vez</h3>
+      <p>Pressione <strong>Ctrl+F5</strong> (executar sem depurar). Deve abrir uma janela de console mostrando <code>Hello, World!</code>. Pressione qualquer tecla para fechar.</p>
+
+      <h3 id="p1-3">Passo 1.3 — Criar a classe Animal</h3>
+      <ol>
+        <li>No Gerenciador de Soluções, botão direito no projeto <code>PetShopConsole</code>.</li>
+        <li><strong>Adicionar</strong> → <strong>Classe...</strong></li>
+        <li>Nomeie <code>Animal.cs</code> e clique em <strong>Adicionar</strong>.</li>
+      </ol>
+      <pre><code>public abstract class Animal
+{
+    public string Nome { get; private set; }
+    public int Idade { get; private set; }
+
+    protected Animal(string nome, int idade)
+    {
+        if (string.IsNullOrWhiteSpace(nome))
+            throw new ArgumentException("O nome do animal é obrigatório.");
+
+        if (idade &lt; 0)
+            throw new ArgumentException("A idade não pode ser negativa.");
+
+        Nome = nome;
+        Idade = idade;
+    }
+
+    public abstract string FazerSom();
+
+    public void Comer() => Console.WriteLine($"{Nome} está comendo.");
+
+    public override string ToString() => $"{Nome} ({Idade} anos) - {GetType().Name}";
+}</code></pre>
+      <table>
+        <thead><tr><th>Trecho</th><th>Pilar</th><th>Por quê</th></tr></thead>
+        <tbody>
+          <tr><td><code>get; private set;</code></td><td>Encapsulamento</td><td>Ninguém de fora muda <code>Nome</code> ou <code>Idade</code> depois de criado</td></tr>
+          <tr><td><code>if (idade &lt; 0) throw ...</code></td><td>Encapsulamento</td><td>Impede que o objeto nasça com dado inválido</td></tr>
+          <tr><td><code>abstract class</code></td><td>Abstração</td><td>Ninguém faz <code>new Animal(...)</code>; toda filha implementa <code>FazerSom</code></td></tr>
+          <tr><td><code>protected Animal(...)</code></td><td>Herança</td><td>Só pode ser chamado pelas classes filhas</td></tr>
+        </tbody>
+      </table>
+
+      <h3 id="p1-4">Passo 1.4 — Criar Cachorro e Gato</h3>
+      <p>Repita o Passo 1.3 para <code>Cachorro.cs</code> e <code>Gato.cs</code>.</p>
+      <pre><code>public class Cachorro : Animal
+{
+    public Cachorro(string nome, int idade) : base(nome, idade) { }
+
+    public override string FazerSom() => "Au au!";
+}</code></pre>
+      <pre><code>public class Gato : Animal
+{
+    public Gato(string nome, int idade) : base(nome, idade) { }
+
+    public override string FazerSom() => "Miau!";
+}</code></pre>
+      <p class="note">O <code>: base(nome, idade)</code> chama o construtor da classe pai. Sem isso, o C# não compila.</p>
+
+      <h3 id="p1-5">Passo 1.5 — Usar as classes em Program.cs</h3>
+      <pre><code>List&lt;Animal&gt; animais = new List&lt;Animal&gt;
+{
+    new Cachorro("Rex", 3),
+    new Gato("Mimi", 2)
+};
+
+foreach (Animal animal in animais)
+{
+    Console.WriteLine(animal);
+    Console.WriteLine(animal.FazerSom());
+    animal.Comer();
+    Console.WriteLine();
+}
+
+Console.WriteLine("Pressione qualquer tecla para sair...");
+Console.ReadKey();</code></pre>
+      <p>Pressione <strong>Ctrl+F5</strong>. Saída esperada:</p>
+      <pre><code>Rex (3 anos) - Cachorro
+Au au!
+Rex está comendo.
+
+Mimi (2 anos) - Gato
+Miau!
+Mimi está comendo.</code></pre>
+      <p>Isso é <strong>polimorfismo</strong>: a mesma linha <code>animal.FazerSom()</code> produz respostas diferentes, dependendo do tipo real do objeto guardado na lista.</p>
+
+      <h3 id="p1-6">Passo 1.6 — Encapsulamento protegendo o programa</h3>
+      <p>Antes do <code>Console.ReadKey();</code>, adicione:</p>
+      <pre><code>try
+{
+    Animal animalInvalido = new Cachorro("", -5);
+}
+catch (ArgumentException ex)
+{
+    Console.WriteLine($"Erro ao criar animal: {ex.Message}");
+}</code></pre>
+      <p>A regra que protege o objeto está dentro da classe <code>Animal</code>, em um único lugar.</p>
+
+      <h3 id="p1-7">Passo 1.7 — Desafio</h3>
+      <p>Crie uma classe <code>Passaro</code> seguindo o mesmo padrão, com <code>FazerSom()</code> retornando <code>"Piu piu!"</code>. Adicione um <code>Passaro</code> na lista e rode de novo.</p>
+      <ul class="checklist">
+        <li>O projeto <code>PetShopConsole</code> compila sem erros</li>
+        <li>A lista imprime nome, idade, som e "está comendo" para cada animal</li>
+        <li>Criar um animal com nome vazio gera o erro tratado, sem derrubar o programa</li>
+        <li>Você criou <code>Passaro</code> sozinho e ele aparece na lista</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Parte 2 — Windows Forms</h2>
+      <p>Até aqui, tudo rodou em texto. Agora vamos dar uma <strong>interface gráfica</strong> ao mesmo sistema.</p>
+
+      <h3>Passo 2.1 — O que é Windows Forms</h3>
+      <p>É uma tecnologia para criar janelas com controles visuais (botões, caixas de texto, listas). A diferença central para o Console: o programa passa a ser <strong>orientado a eventos</strong> — fica esperando o usuário clicar em algo, e só então executa o código correspondente.</p>
+
+      <h3 id="p2-2">Passo 2.2 — Criar o projeto Windows Forms</h3>
+      <ol>
+        <li><strong>Arquivo</strong> → <strong>Novo</strong> → <strong>Projeto...</strong></li>
+        <li>Busque <code>Aplicativo Windows Forms</code>, modelo com etiqueta <strong>C#</strong>.</li>
+        <li>Nome do projeto: <code>PetShopForms</code>.</li>
+        <li>Estrutura: <strong>.NET 8.0 (Suporte de Longo Prazo)</strong>.</li>
+        <li>Clique em <strong>Criar</strong>.</li>
+      </ol>
+      <p class="note">São dois projetos separados — o Visual Studio não mistura um com o outro automaticamente.</p>
+
+      <h3>Passo 2.3 — Conhecendo o Designer</h3>
+      <p>Três painéis importantes: <strong>Caixa de Ferramentas</strong> (<code>Ctrl+Alt+X</code>), <strong>Janela Propriedades</strong> (<code>F4</code>), e o <strong>Gerenciador de Soluções</strong>, onde <code>Form1.cs</code> esconde um <code>Form1.Designer.cs</code> gerado automaticamente.</p>
+
+      <h3 id="p2-4">Passo 2.4 — Montando a tela</h3>
+      <p>Arraste da Caixa de Ferramentas para o formulário, ajustando o <strong>(Name)</strong> de cada controle na Janela Propriedades:</p>
+      <table>
+        <thead><tr><th>Controle</th><th>(Name)</th><th>Outra propriedade</th></tr></thead>
+        <tbody>
+          <tr><td>Label</td><td><code>lblNome</code></td><td>Text → "Nome:"</td></tr>
+          <tr><td>TextBox</td><td><code>txtNome</code></td><td>—</td></tr>
+          <tr><td>Label</td><td><code>lblIdade</code></td><td>Text → "Idade:"</td></tr>
+          <tr><td>TextBox</td><td><code>txtIdade</code></td><td>—</td></tr>
+          <tr><td>Label</td><td><code>lblTipo</code></td><td>Text → "Tipo:"</td></tr>
+          <tr><td>ComboBox</td><td><code>cmbTipo</code></td><td>veja Passo 2.5</td></tr>
+          <tr><td>Button</td><td><code>btnCadastrar</code></td><td>Text → "Cadastrar"</td></tr>
+          <tr><td>ListBox</td><td><code>lstAnimais</code></td><td>aumente a altura</td></tr>
+          <tr><td>Button</td><td><code>btnFazerSom</code></td><td>Text → "Fazer Som"</td></tr>
+        </tbody>
+      </table>
+      <div class="callout warn">
+        <span class="label">Atenção ao (Name)</span>
+        <p>Por padrão, o Visual Studio nomeia os controles como <code>button1</code>, <code>textBox1</code>. Sempre renomeie antes de programar o controle.</p>
+      </div>
+
+      <h3>Passo 2.5 — Preenchendo o ComboBox</h3>
+      <ol>
+        <li>Clique no <code>cmbTipo</code>.</li>
+        <li>Na Janela Propriedades, propriedade <strong>Items</strong> → clique nos três pontinhos <code>...</code></li>
+        <li>Digite, uma por linha: <code>Cachorro</code> e <code>Gato</code>.</li>
+        <li>Clique em <strong>OK</strong>.</li>
+      </ol>
+
+      <h3 id="p2-6">Passo 2.6 — Trazendo as classes do outro projeto</h3>
+      <p>O projeto <code>PetShopForms</code> ainda não conhece <code>Animal</code>, <code>Cachorro</code> nem <code>Gato</code>. Crie os três arquivos de novo (Adicionar → Classe...) com o mesmo conteúdo da Parte 1.</p>
+      <div class="callout">
+        <span class="label">Para ir além</span>
+        <p>Uma forma mais elegante é criar um terceiro projeto do tipo <strong>Biblioteca de Classes</strong> e fazer os dois projetos referenciarem essa biblioteca, evitando código duplicado.</p>
+      </div>
+
+      <h3 id="p2-8">Passo 2.8 — Programando o botão Cadastrar</h3>
+      <p>Dê um <strong>duplo clique</strong> em <code>btnCadastrar</code> no formulário — o Visual Studio gera o método <code>btnCadastrar_Click</code>.</p>
+      <pre><code>private void btnCadastrar_Click(object sender, EventArgs e)
+{
+    string nome = txtNome.Text;
+
+    if (!int.TryParse(txtIdade.Text, out int idade))
+    {
+        MessageBox.Show("Digite uma idade válida.", "Erro de validação");
+        return;
+    }
+
+    Animal novoAnimal;
+
+    try
+    {
+        if (cmbTipo.SelectedItem?.ToString() == "Cachorro")
+            novoAnimal = new Cachorro(nome, idade);
+        else if (cmbTipo.SelectedItem?.ToString() == "Gato")
+            novoAnimal = new Gato(nome, idade);
+        else
+        {
+            MessageBox.Show("Selecione o tipo do animal.", "Erro de validação");
+            return;
+        }
+    }
+    catch (ArgumentException ex)
+    {
+        MessageBox.Show(ex.Message, "Erro ao cadastrar");
+        return;
+    }
+
+    _animais.Add(novoAnimal);
+    lstAnimais.Items.Add(novoAnimal);
+
+    txtNome.Clear();
+    txtIdade.Clear();
+    cmbTipo.SelectedIndex = -1;
+}</code></pre>
+      <p>Adicione o campo abaixo de <code>public partial class Form1 : Form</code>, antes do construtor:</p>
+      <pre><code>private List&lt;Animal&gt; _animais = new List&lt;Animal&gt;();</code></pre>
+
+      <h3 id="p2-9">Passo 2.9 — Programando o botão Fazer Som</h3>
+      <p>Duplo clique em <code>btnFazerSom</code>:</p>
+      <pre><code>private void btnFazerSom_Click(object sender, EventArgs e)
+{
+    if (lstAnimais.SelectedItem is Animal animalSelecionado)
+    {
+        MessageBox.Show(animalSelecionado.FazerSom(), $"{animalSelecionado.Nome} diz:");
+    }
+    else
+    {
+        MessageBox.Show("Selecione um animal na lista primeiro.", "Nenhum animal selecionado");
+    }
+}</code></pre>
+
+      <h3 id="p2-10">Passo 2.10 — Rodando o programa completo</h3>
+      <ol>
+        <li>Pressione <strong>F5</strong>.</li>
+        <li>Digite um nome, uma idade, escolha "Cachorro", clique <strong>Cadastrar</strong>.</li>
+        <li>Repita com "Gato" e outro nome.</li>
+        <li>Clique em um item da lista para selecioná-lo.</li>
+        <li>Clique em <strong>Fazer Som</strong> — a caixa de mensagem mostra "Au au!" ou "Miau!" conforme o tipo.</li>
+      </ol>
+      <div class="callout good">
+        <span class="label">O que isso prova</span>
+        <p>O botão Fazer Som não sabe, e não precisa saber, se o item selecionado é um <code>Cachorro</code> ou um <code>Gato</code> — ele só chama <code>FazerSom()</code> e deixa o objeto responder. Polimorfismo, agora numa interface gráfica de verdade.</p>
+      </div>
+
+      <h3>Passo 2.11 — Desafio final</h3>
+      <p>Escolha ao menos um:</p>
+      <ol>
+        <li>Adicione <code>Passaro</code> ao <code>cmbTipo</code> e ao cadastro.</li>
+        <li>Adicione um botão <strong>Remover</strong> que apaga o animal selecionado da lista.</li>
+        <li>Adicione um <code>Label</code> que mostra quantos animais já foram cadastrados.</li>
+      </ol>
+    </section>
+
+    <section id="erros">
+      <h2>Erros comuns e como resolver</h2>
+      <table>
+        <thead><tr><th>Sintoma</th><th>Causa provável</th><th>Solução</th></tr></thead>
+        <tbody>
+          <tr><td><code>O nome 'Animal' não existe no contexto atual</code></td><td>Esqueceu de criar <code>Animal.cs</code> em <code>PetShopForms</code></td><td>Repita o Passo 2.6</td></tr>
+          <tr><td>Clicar no botão não faz nada</td><td>O método foi criado mas não ligado ao evento</td><td>Apague o método, volte ao Designer e dê duplo clique de novo</td></tr>
+          <tr><td><code>cmbTipo.SelectedItem</code> sempre <code>null</code></td><td>Itens não cadastrados no ComboBox</td><td>Repita o Passo 2.5</td></tr>
+          <tr><td><code>InvalidCastException</code> ao clicar em Fazer Som</td><td>O ListBox recebeu uma <code>string</code> em vez do objeto</td><td>Confira se usou <code>lstAnimais.Items.Add(novoAnimal)</code>, sem <code>.ToString()</code></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>O que você praticou</h2>
+      <ul>
+        <li><strong>Encapsulamento</strong> — propriedades com <code>private set</code> e validação no construtor, no Console e capturando o erro na tela gráfica.</li>
+        <li><strong>Herança</strong> — <code>Cachorro</code> e <code>Gato</code> reaproveitando <code>Nome</code>, <code>Idade</code> e <code>Comer()</code>.</li>
+        <li><strong>Polimorfismo</strong> — a mesma chamada <code>FazerSom()</code> respondendo diferente, do <code>foreach</code> ao clique de botão.</li>
+        <li><strong>Abstração</strong> — <code>Animal</code> como classe abstrata, sem que quem usa a lista precise saber os detalhes de cada tipo.</li>
+      </ul>
+    </section>
+
+    <div class="pagefoot">
+      <a href="aula-tecnica.html">← Aula técnica</a>
+      <a href="index.html">Voltar ao início →</a>
+    </div>
+  </main>
+</div>
+
+<footer class="site-footer">
+  Material da disciplina de Programação Orientada a Objetos — publicado com GitHub Pages.
+</footer>
+
+</body>
+</html>

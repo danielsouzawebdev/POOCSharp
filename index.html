@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>POO em C# — Material da disciplina</title>
+<meta name="description" content="Material de Programação Orientada a Objetos em C#: introdução conceitual, aula técnica e tutorial prático no Visual Studio.">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="bar">
+    <a class="brand" href="index.html">
+      <span class="dots"><span></span><span></span><span></span></span>
+      POO em C#
+    </a>
+    <nav class="site-nav">
+      <a href="index.html" aria-current="page">Início</a>
+      <a href="introducao.html">Introdução</a>
+      <a href="aula-tecnica.html">Aula Técnica</a>
+      <a href="tutorial-visual-studio.html">Tutorial VS</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div>
+      <p class="eyebrow">disciplina · programação orientada a objetos</p>
+      <h1>Pensar em objetos, escrever em C#.</h1>
+      <p class="lede">Material completo da disciplina: da ideia por trás da POO até uma tela funcionando no Visual Studio, com o mesmo exemplo do início ao fim.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="introducao.html">Começar pela introdução</a>
+        <a class="btn btn-ghost" href="aula-tecnica.html">Ir direto ao código</a>
+      </div>
+    </div>
+
+    <div class="code-panel">
+      <div class="tab-bar">
+        <span class="dots"><span></span><span></span><span></span></span>
+        <span class="filename">Voce.cs</span>
+      </div>
+      <pre><code>public class Voce
+{
+    public string Objetivo
+        => "Entender POO em C#";
+
+    public bool JaSabe { get; private set; }
+        = false;
+
+    public void Estudar()
+    {
+        LerIntroducao();
+        PraticarNoVisualStudio();
+        JaSabe = true;
+    }
+}</code></pre>
+    </div>
+  </section>
+
+  <section class="tabs">
+    <h2>Três materiais, uma sequência</h2>
+    <p class="lede">Pensados para serem usados em ordem, mas cada um funciona sozinho como referência.</p>
+
+    <div class="tab-grid">
+      <a class="tab-card tab-card--intro" href="introducao.html">
+        <p class="kicker">01 · sem pré-requisitos</p>
+        <h3>Introdução conceitual</h3>
+        <p>O que é POO, explicado por analogias — receita de bolo, controle remoto, família de animais. Quase nenhum código.</p>
+        <span class="open">Abrir a introdução</span>
+      </a>
+
+      <a class="tab-card tab-card--tecnica" href="aula-tecnica.html">
+        <p class="kicker">02 · com sintaxe de C#</p>
+        <h3>Aula técnica</h3>
+        <p>Classes, encapsulamento, herança, polimorfismo e abstração com código C# real, exercícios e o projeto final.</p>
+        <span class="open">Abrir a aula técnica</span>
+      </a>
+
+      <a class="tab-card tab-card--tutorial" href="tutorial-visual-studio.html">
+        <p class="kicker">03 · mão na massa</p>
+        <h3>Tutorial no Visual Studio</h3>
+        <p>Passo a passo para construir o mesmo sistema no Console e depois numa tela de Windows Forms.</p>
+        <span class="open">Abrir o tutorial</span>
+      </a>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  Material da disciplina de Programação Orientada a Objetos — publicado com GitHub Pages.
+</footer>
+
+</body>
+</html>
